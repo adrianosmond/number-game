@@ -1,6 +1,7 @@
 import { ChangeEventHandler, useState } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import useConfetti from './hooks/useConfetti';
+import useVisualViewportHeight from './hooks/useVisualViewportHeight';
 
 const makeTarget = (currentTarget?: number) => {
   let newTarget = Math.floor(Math.random() * 9) + 1;
@@ -24,6 +25,8 @@ const getColumnClass = (numOptions: number) =>
 const SAVED_NUM_OPTIONS_KEY = '__NUM_OPTIONS';
 
 const App = () => {
+  const height = useVisualViewportHeight();
+
   const [target, setTarget] = useState(makeTarget);
   const [numOptions, setNumOptions] = useState(
     parseInt(window.localStorage.getItem(SAVED_NUM_OPTIONS_KEY) || '2', 10),
@@ -51,7 +54,7 @@ const App = () => {
   };
 
   return (
-    <>
+    <div style={{ minHeight: height }} className="flex flex-col justify-center">
       <div className="text-3xl flex portrait:flex-col items-center landscape:justify-between portrait:gap-12">
         <div className="text-8xl font-bold mx-auto flex-grow landscape:basis-0">
           {target}
@@ -88,10 +91,10 @@ const App = () => {
           max={9}
           value={numOptions}
           onChange={updateNumOptions}
-          className="fixed left-4 right-4 bottom-4"
+          className="fixed left-4 right-4 top-4"
         />
       </div>
-    </>
+    </div>
   );
 };
 
