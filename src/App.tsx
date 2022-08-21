@@ -1,8 +1,14 @@
-import { ChangeEventHandler, useMemo, useState } from 'react';
+import { ChangeEventHandler, useState } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import useConfetti from './hooks/useConfetti';
 
-const makeTarget = () => Math.floor(Math.random() * 9) + 1;
+const makeTarget = (currentTarget?: number) => {
+  let newTarget = Math.floor(Math.random() * 9) + 1;
+  while (newTarget === currentTarget) {
+    newTarget = Math.floor(Math.random() * 9) + 1;
+  }
+  return newTarget;
+};
 
 const makeOptions = (target: number, numOptions = 2) => {
   const options = new Set([target]);
@@ -25,16 +31,13 @@ const App = () => {
 
   const { fireConfetti, setConfettiInstance } = useConfetti();
 
-  const options = useMemo(
-    () => makeOptions(target, numOptions),
-    [target, numOptions],
-  );
+  const options = makeOptions(target, numOptions);
 
   const giveAnswer = (option: number) => {
     if (option === target) {
       fireConfetti();
     }
-    const t = makeTarget();
+    const t = makeTarget(target);
     setTarget(t);
   };
 
