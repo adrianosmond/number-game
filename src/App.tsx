@@ -1,11 +1,6 @@
-import {
-  ChangeEventHandler,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { ChangeEventHandler, useMemo, useState } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
+import useConfetti from './hooks/useConfetti';
 
 const makeTarget = () => Math.floor(Math.random() * 9) + 1;
 
@@ -28,56 +23,7 @@ const App = () => {
     parseInt(window.localStorage.getItem(SAVED_NUM_OPTIONS_KEY) || '2', 10),
   );
 
-  const refAnimationInstance = useRef<confetti.CreateTypes | null>(null);
-
-  const setInstance = useCallback((instance: confetti.CreateTypes | null) => {
-    refAnimationInstance.current = instance;
-  }, []);
-
-  const makeShot = useCallback(
-    (particleRatio: number, opts: confetti.Options) => {
-      refAnimationInstance.current?.({
-        ...opts,
-        origin: { y: 1 },
-        particleCount: Math.floor(200 * particleRatio),
-      });
-    },
-    [],
-  );
-
-  const fire = useCallback(() => {
-    makeShot(0.25, {
-      ticks: 60,
-      spread: 26,
-      startVelocity: 55,
-    });
-
-    makeShot(0.2, {
-      ticks: 60,
-      spread: 60,
-    });
-
-    makeShot(0.35, {
-      ticks: 60,
-      spread: 100,
-      decay: 0.91,
-      scalar: 0.8,
-    });
-
-    makeShot(0.1, {
-      ticks: 60,
-      spread: 120,
-      startVelocity: 25,
-      decay: 0.92,
-      scalar: 1.2,
-    });
-
-    makeShot(0.1, {
-      ticks: 60,
-      spread: 120,
-      startVelocity: 45,
-    });
-  }, [makeShot]);
+  const { fireConfetti, setConfettiInstance } = useConfetti();
 
   const options = useMemo(
     () => makeOptions(target, numOptions),
@@ -86,7 +32,7 @@ const App = () => {
 
   const giveAnswer = (option: number) => {
     if (option === target) {
-      fire();
+      fireConfetti();
     }
     const t = makeTarget();
     setTarget(t);
@@ -123,7 +69,7 @@ const App = () => {
           ))}
         </div>
         <ReactCanvasConfetti
-          refConfetti={setInstance}
+          refConfetti={setConfettiInstance}
           style={{
             position: 'fixed',
             pointerEvents: 'none',
