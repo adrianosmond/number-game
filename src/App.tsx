@@ -26,8 +26,8 @@ const SAVED_NUM_OPTIONS_KEY = '__NUM_OPTIONS';
 
 const App = () => {
   const height = useVisualViewportHeight();
-
   const [target, setTarget] = useState(makeTarget);
+  const [hidden, setHidden] = useState(false);
   const [numOptions, setNumOptions] = useState(
     parseInt(window.localStorage.getItem(SAVED_NUM_OPTIONS_KEY) || '2', 10),
   );
@@ -39,6 +39,11 @@ const App = () => {
   const giveAnswer = (option: number) => {
     if (option === target) {
       fireConfetti();
+    } else {
+      setHidden(true);
+      setTimeout(() => {
+        setHidden(false);
+      }, 1000);
     }
     const t = makeTarget(target);
     setTarget(t);
@@ -55,45 +60,47 @@ const App = () => {
 
   return (
     <div style={{ minHeight: height }} className="flex flex-col justify-center">
-      <div className="text-3xl flex portrait:flex-col items-center landscape:justify-between portrait:gap-12">
-        <div className="text-8xl font-bold mx-auto flex-grow landscape:basis-0">
-          {target}
+      {!hidden && (
+        <div className="text-3xl flex portrait:flex-col items-center landscape:justify-between portrait:gap-12">
+          <div className="text-8xl font-bold mx-auto flex-grow landscape:basis-0">
+            {target}
+          </div>
+          <div
+            className={`grid gap-4 justify-center flex-grow landscape:basis-0 ${getColumnClass(
+              numOptions,
+            )}`}
+          >
+            {options.map((option) => (
+              <button
+                className="bg-green-500 text-white py-2 px-4 aspect-square font-bold leading-none"
+                key={option}
+                onClick={() => giveAnswer(option)}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <ReactCanvasConfetti
+            refConfetti={setConfettiInstance}
+            style={{
+              position: 'fixed',
+              pointerEvents: 'none',
+              width: '100%',
+              height: '100%',
+              top: 0,
+              left: 0,
+            }}
+          />
+          <input
+            type="range"
+            min={2}
+            max={9}
+            value={numOptions}
+            onChange={updateNumOptions}
+            className="fixed left-4 right-4 top-4"
+          />
         </div>
-        <div
-          className={`grid gap-4 justify-center flex-grow landscape:basis-0 ${getColumnClass(
-            numOptions,
-          )}`}
-        >
-          {options.map((option) => (
-            <button
-              className="bg-green-500 text-white py-2 px-4 aspect-square font-bold leading-none"
-              key={option}
-              onClick={() => giveAnswer(option)}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-        <ReactCanvasConfetti
-          refConfetti={setConfettiInstance}
-          style={{
-            position: 'fixed',
-            pointerEvents: 'none',
-            width: '100%',
-            height: '100%',
-            top: 0,
-            left: 0,
-          }}
-        />
-        <input
-          type="range"
-          min={2}
-          max={9}
-          value={numOptions}
-          onChange={updateNumOptions}
-          className="fixed left-4 right-4 top-4"
-        />
-      </div>
+      )}
     </div>
   );
 };
