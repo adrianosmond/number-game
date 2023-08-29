@@ -131,7 +131,7 @@ const App = () => {
       )}
       {!hidden && !showSettings && (
         <div className="text-3xl flex portrait:flex-col items-center landscape:justify-between portrait:gap-12">
-          <div className="text-8xl font-bold mx-auto flex-grow landscape:basis-0">
+          <div className="text-8xl font-bold mx-auto flex-grow landscape:basis-0 capitalize">
             {target}
           </div>
           <div
@@ -141,7 +141,7 @@ const App = () => {
           >
             {options.map((option) => (
               <button
-                className="bg-green-500 text-white py-2 px-4 aspect-square font-bold leading-none"
+                className="bg-green-500 text-white py-2 px-4 aspect-square font-bold leading-none capitalize"
                 key={option}
                 onClick={() => giveAnswer(option)}
               >
