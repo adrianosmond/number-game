@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useEffect, useState } from 'react';
+import { ChangeEventHandler, useEffect, useRef, useState } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import useConfetti from './hooks/useConfetti';
 import useVisualViewportHeight from './hooks/useVisualViewportHeight';
@@ -11,6 +11,41 @@ enum TARGET_TYPE {
 }
 
 const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
+const PHRASES: Record<string, string[]> = {
+  a: ['apple'],
+  b: ['banana'],
+  c: ['cat'],
+  d: ['dog', 'daddy'],
+  e: ['elephant'],
+  f: ['fox'],
+  g: ['Graham', 'Grandma', 'Gruffalo'],
+  h: ['helicopter'],
+  i: ['Isabel'],
+  j: ['jump'],
+  k: ['kangaroo'],
+  l: ['lion'],
+  m: ['mummy'],
+  n: ['narwhal'],
+  o: ['orange'],
+  p: ['pear'],
+  q: ['queen'],
+  r: ['red', 'rabbit'],
+  s: ['snake', 'spider'],
+  t: ['tiger'],
+  u: ['umbrella'],
+  v: ['violin'],
+  w: ['whale'],
+  x: ['x-ray'],
+  y: ['yak'],
+  z: ['zebra'],
+};
+
+const makePhrase = (target: Target) =>
+  PHRASES[target]
+    ? `${target.toString().toLocaleUpperCase()}... ${target
+        .toString()
+        .toLocaleUpperCase()}. is for ${PHRASES[target].join('. And ')}`
+    : target.toString();
 
 const pickRandom = (targetType: TARGET_TYPE) =>
   targetType === TARGET_TYPE.NUMBERS
@@ -56,30 +91,34 @@ const App = () => {
 
   const { fireConfetti, setConfettiInstance } = useConfetti();
 
-  const options = makeOptions(targetType, target, numOptions);
+  const options = useRef(makeOptions(targetType, target, numOptions));
 
   const giveAnswer = (option: Target) => {
     if (option === target) {
       fireConfetti();
+      setTarget(makeTarget(targetType, target));
     } else {
       setHidden(true);
       setTimeout(() => {
+        setTarget(makeTarget(targetType, target));
         setHidden(false);
       }, 1000);
     }
-
-    setTarget(makeTarget(targetType, target));
   };
 
   useEffect(() => {
-    const toSpeak = new SpeechSynthesisUtterance(`${target}`);
-    toSpeak.rate = 0.7;
+    options.current = makeOptions(targetType, target, numOptions);
+    const toSpeak = new SpeechSynthesisUtterance(makePhrase(target));
+    toSpeak.rate = 0.8;
+    toSpeak.pitch = 1.3;
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(toSpeak);
 
     setInteractive(false);
     setTimeout(() => {
       setInteractive(true);
     }, 500);
+  }, [numOptions, target, targetType]);
 
   const updateNumOptions: ChangeEventHandler<HTMLInputElement> = (e) => {
     const newNumOptions = parseInt(e.target.value, 10);
@@ -156,7 +195,7 @@ const App = () => {
               numOptions,
             )}`}
           >
-            {options.map((option) => (
+            {options.current.map((option) => (
               <button
                 className="bg-green-500 text-white py-2 px-4 aspect-square font-bold leading-none capitalize"
                 key={option}
