@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useState } from 'react';
+import { ChangeEventHandler, useEffect, useState } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import useConfetti from './hooks/useConfetti';
 import useVisualViewportHeight from './hooks/useVisualViewportHeight';
@@ -69,6 +69,12 @@ const App = () => {
 
     setTarget(makeTarget(targetType, target));
   };
+
+  useEffect(() => {
+    const toSpeak = new SpeechSynthesisUtterance(`${target}`);
+    toSpeak.rate = 0.7;
+    window.speechSynthesis.speak(toSpeak);
+  }, [target]);
 
   const updateNumOptions: ChangeEventHandler<HTMLInputElement> = (e) => {
     const newNumOptions = parseInt(e.target.value, 10);
