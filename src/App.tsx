@@ -49,6 +49,7 @@ const App = () => {
   const height = useVisualViewportHeight();
   const [target, setTarget] = useState(makeTarget(targetType));
   const [hidden, setHidden] = useState(false);
+  const [interactive, setInteractive] = useState(true);
   const [numOptions, setNumOptions] = useState(
     parseInt(window.localStorage.getItem(SAVED_NUM_OPTIONS_KEY) || '2', 10),
   );
@@ -74,7 +75,11 @@ const App = () => {
     const toSpeak = new SpeechSynthesisUtterance(`${target}`);
     toSpeak.rate = 0.7;
     window.speechSynthesis.speak(toSpeak);
-  }, [target]);
+
+    setInteractive(false);
+    setTimeout(() => {
+      setInteractive(true);
+    }, 500);
 
   const updateNumOptions: ChangeEventHandler<HTMLInputElement> = (e) => {
     const newNumOptions = parseInt(e.target.value, 10);
@@ -86,7 +91,13 @@ const App = () => {
   };
 
   return (
-    <div style={{ minHeight: height }} className="flex flex-col justify-center">
+    <div
+      style={{
+        minHeight: height,
+        pointerEvents: interactive ? undefined : 'none',
+      }}
+      className="flex flex-col justify-center"
+    >
       <button
         onClick={() => {
           setShowSettings((s) => !s);
