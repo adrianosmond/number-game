@@ -21,12 +21,12 @@ const PHRASES: Record<string, string[]> = {
   g: ['Graham', 'Grandma', 'Gruffalo'],
   h: ['helicopter'],
   i: ['Isabel'],
-  j: ['jump'],
+  j: ['james', 'jump'],
   k: ['kangaroo'],
   l: ['lion'],
   m: ['mummy'],
   n: ['narwhal'],
-  o: ['orange'],
+  o: ['oliver', 'orange'],
   p: ['pear'],
   q: ['queen'],
   r: ['red', 'rabbit'],
@@ -37,7 +37,8 @@ const PHRASES: Record<string, string[]> = {
   w: ['whale'],
   x: ['x-ray'],
   y: ['yak'],
-  z: ['zebra'],
+  z: ['zog', 'zebra'],
+};
 };
 
 const makePhrase = (target: Target) =>
