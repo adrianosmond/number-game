@@ -9,7 +9,8 @@ enum TARGET_TYPE {
   NUMBERS,
   LETTERS,
 }
-
+const CORRECT_PAUSE_MS = 1000;
+const INCORRECT_PAUSE_MS = 2000;
 const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const PHRASES: Record<string, string[]> = {
   a: ['apple'],
@@ -39,6 +40,18 @@ const PHRASES: Record<string, string[]> = {
   y: ['yak'],
   z: ['zog', 'zebra'],
 };
+
+const say = (phrase: string) => {
+  const toSpeak = new SpeechSynthesisUtterance(phrase);
+  toSpeak.rate = 0.8;
+  toSpeak.pitch = 1.3;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(toSpeak);
+};
+
+const getCongratulation = () => {
+  const congrationations = ['Good job!', 'Yes!', "That's right", 'Correct!'];
+  return congrationations[Math.floor(Math.random() * congrationations.length)];
 };
 
 const makePhrase = (target: Target) =>
@@ -95,26 +108,28 @@ const App = () => {
   const options = useRef(makeOptions(targetType, target, numOptions));
 
   const giveAnswer = (option: Target) => {
+    setInteractive(false);
     if (option === target) {
+      say(getCongratulation());
       fireConfetti();
-      setTarget(makeTarget(targetType, target));
-    } else {
-      setHidden(true);
       setTimeout(() => {
         setTarget(makeTarget(targetType, target));
+        setInteractive(true);
+      }, CORRECT_PAUSE_MS);
+    } else {
+      setHidden(true);
+      say(`No. That was. ${option}.`);
+      setTimeout(() => {
+        setTarget(makeTarget(targetType, target));
+        setInteractive(true);
         setHidden(false);
-      }, 1000);
+      }, INCORRECT_PAUSE_MS);
     }
   };
 
   useEffect(() => {
     options.current = makeOptions(targetType, target, numOptions);
-    const toSpeak = new SpeechSynthesisUtterance(makePhrase(target));
-    toSpeak.rate = 0.8;
-    toSpeak.pitch = 1.3;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(toSpeak);
-
+    say(makePhrase(target));
     setInteractive(false);
     setTimeout(() => {
       setInteractive(true);
