@@ -1,11 +1,12 @@
 {
-  "name": "number-game",
+  "name": "olenu",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "generate-icons": "npx pwa-asset-generator public/icon.svg splash-screens/ -b '#1e293b' -i './index.html' -m './manifest.json'"
   },
   "dependencies": {
     "react": "^18.2.0",

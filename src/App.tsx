@@ -50,7 +50,15 @@ const say = (phrase: string) => {
 };
 
 const getCongratulation = () => {
-  const congrationations = ['Good job!', 'Yes!', "That's right", 'Correct!'];
+  const congrationations = [
+    'Good job!',
+    'Yes!',
+    "That's right",
+    'Correct!',
+    'Affirmative!',
+    'Nice one!',
+    'Great work!',
+  ];
   return congrationations[Math.floor(Math.random() * congrationations.length)];
 };
 
