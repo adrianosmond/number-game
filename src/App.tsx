@@ -9,7 +9,7 @@ enum TARGET_TYPE {
   NUMBERS,
   LETTERS,
 }
-const CORRECT_PAUSE_MS = 1000;
+const CORRECT_PAUSE_MS = 1500;
 const INCORRECT_PAUSE_MS = 2000;
 const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const PHRASES: Record<string, string[]> = {
@@ -102,6 +102,7 @@ const SAVED_NUM_OPTIONS_KEY = '__NUM_OPTIONS';
 
 const App = () => {
   const [showSettings, setShowSettings] = useState(false);
+  const [showTarget, setShowTarget] = useState(true);
   const [targetType, setTargetType] = useState(TARGET_TYPE.NUMBERS);
   const height = useVisualViewportHeight();
   const [target, setTarget] = useState(makeTarget(targetType));
@@ -137,12 +138,12 @@ const App = () => {
 
   useEffect(() => {
     options.current = makeOptions(targetType, target, numOptions);
-    say(makePhrase(target));
+    say(makePhrase(showTarget ? target : `Which one is ${target}?`));
     setInteractive(false);
     setTimeout(() => {
       setInteractive(true);
     }, 500);
-  }, [numOptions, target, targetType]);
+  }, [numOptions, target, targetType, showTarget]);
 
   const updateNumOptions: ChangeEventHandler<HTMLInputElement> = (e) => {
     const newNumOptions = parseInt(e.target.value, 10);
@@ -185,6 +186,14 @@ const App = () => {
             onChange={updateNumOptions}
             className="w-full"
           />
+          <label className="flex items-center gap-4 my-4">
+            Show target?
+            <input
+              type="checkbox"
+              checked={showTarget}
+              onChange={() => setShowTarget((s) => !s)}
+            />
+          </label>
           {targetType !== TARGET_TYPE.LETTERS && (
             <button
               className="w-full p-2 bg-green-700 text-white"
@@ -211,9 +220,11 @@ const App = () => {
       )}
       {!hidden && !showSettings && (
         <div className="text-3xl flex portrait:flex-col items-center landscape:justify-between portrait:gap-12">
-          <div className="text-8xl font-bold mx-auto flex-grow landscape:basis-0 capitalize">
-            {target}
-          </div>
+          {showTarget && (
+            <div className="text-8xl font-bold mx-auto flex-grow landscape:basis-0 capitalize">
+              {target}
+            </div>
+          )}
           <div
             className={`grid gap-4 justify-center flex-grow landscape:basis-0 ${getColumnClass(
               numOptions,
@@ -221,8 +232,9 @@ const App = () => {
           >
             {options.current.map((option) => (
               <button
-                className="bg-green-500 text-white py-2 px-4 aspect-square font-bold leading-none capitalize"
+                className="bg-green-500 text-white aspect-square font-bold leading-none capitalize"
                 key={option}
+                style={{ width: '3.85rem' }}
                 onClick={() => giveAnswer(option)}
               >
                 {option}
